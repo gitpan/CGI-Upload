@@ -1,38 +1,49 @@
 Revision history for Perl extension CGI::Upload
 
 1.00  Mon Mar 11 00:00:00 2002
-        - original version; rob@cowsnet.com.au
+	- original version; rob@cowsnet.com.au
 
 1.01  Wed Mar 13 13:35:00 2002
-        - included documentation; rob@cowsnet.com.au
-        - included binmode handling for temporary files; rob@cowsnet.com.au
-        - included call to File::Basename::fileparse_set_fstype; rob@cowsnet.com.au
-        - modified suffix regular expression in File::Basename::fileparse arguments; rob@cowsnet.com.au
+	- included documentation; rob@cowsnet.com.au
+	- included binmode handling for temporary files; rob@cowsnet.com.au
+	- included call to File::Basename::fileparse_set_fstype; rob@cowsnet.com.au
+	- modified suffix regular expression in File::Basename::fileparse arguments; rob@cowsnet.com.au
 
 1.02  Tue May 07 14:05:00 2002
-        - included query method and optional CGI.pm parameter to new constructor; rob@cowsnet.com.au
-        - updated _handle_file to include bug fix by Curtis "Ovid" Poe (poec@yahoo.com); rob@cowsnet.com.au
-        - updated _handle_file to include binmode determination; rob@cowsnet.com.au
-        - updated Makefile.PL; rob@cowsnet.com.au
-        - updated documentation; rob@cowsnet.com.au
+	- included query method and optional CGI.pm parameter to new constructor; rob@cowsnet.com.au
+	- updated _handle_file to include bug fix by Curtis "Ovid" Poe (poec@yahoo.com); rob@cowsnet.com.au
+	- updated _handle_file to include binmode determination; rob@cowsnet.com.au
+	- updated Makefile.PL; rob@cowsnet.com.au
+	- updated documentation; rob@cowsnet.com.au
 
 1.03  Mon May 27 23:15:00 2002
-        - included bug fix for binmode handling on Windows systems; rob@cowsnet.com.au
+	- included bug fix for binmode handling on Windows systems; rob@cowsnet.com.au
 
 1.04  Wed Sep 20 23:10:00 2002
-        - major code refactoring, incorporated AUTOLOAD functions; rob@cowsnet.com.au
-        - included basic module tests; rob@cowsnet.com.au
-        - updated Makefile.PL; rob@cowsnet.com.au
-        - updated documentation; rob@cowsnet.com.au
+	- major code refactoring, incorporated AUTOLOAD functions; rob@cowsnet.com.au
+	- included basic module tests; rob@cowsnet.com.au
+	- updated Makefile.PL; rob@cowsnet.com.au
+	- updated documentation; rob@cowsnet.com.au
 
 1.05  Sun Nov 24 22:15:00 2002
-        - included DESTROY subroutine; rob@cowsnet.com.au
-        - updated module tests; rob@cowsnet.com.au
+	- included DESTROY subroutine; rob@cowsnet.com.au
+	- updated module tests; rob@cowsnet.com.au
 
 1.06 Mon May 31 20:58:15 GMT+2 2004
-        - adding some tests
-        - Apply patches for bugs reported in RT #1854 and #5823
-        - Explicit undef as return value was replaced by return with nothing. This might cause bad code
-		  such as this @a = $upload->file_handle;      that relies on undef in list context to fail.
-        - (blame me: gabor@pti.co.il)
+	- adding some tests
+	- Apply patches for bugs reported in RT #1854 and #5823
+	- Explicit undef as return value was replaced by return with nothing. 
+		This might cause bad code such as this 
+		
+		@a = $upload->file_handle;
+		
+		that relies on undef in list context to fail.
+	- (blame me: gabor@pti.co.il)
+
+1.07 Tue Jun  8 12:55:39 GMT+2 2004
+	- Add CGI.pm 2.47 as requirement 
+	  so we can use the more correct "upload" method for getting the file handle.
+	- Add (experiamental) support for CGI::Simple and theoretically to other CGI-like modules.
+	  CGI.pm and CGI::Simple are actually tested.
+
 

@@ -45,7 +45,10 @@ use Test::More tests => 4;
 		binmode(STDIN);
 
 		$u = CGI::Upload->new();
-	    ok(not(defined $u->file_name("other_field")), "returns undef");
+		#SKIP: {
+		#	skip "fix invalid call", 1;
+	    	ok(not(defined $u->file_name("other_field")), "returns undef");
+		#}
 		my $remote = $u->file_handle('field');
 		$uploaded_size = read $remote, $uploaded_content, 10000;
 	}

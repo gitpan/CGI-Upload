@@ -8,16 +8,21 @@ use strict;
 use lib qw(lib t/lib);
 use CGI::Upload;
 use CGI::Upload::Test;
-use Test::More tests => 6*1;
+use Test::More tests => 7;
 
-#upload_file("plain.txt");
 $ENV{HTTP_USER_AGENT} = "Mozilla/5.0 (X11; U; Linux i686; en-US; rv:1.3) Gecko/20030312";
-upload_file("plain.txt", {
-           long_filename_on_client => '/tmp/plain.txt',
-           short_filename_on_client => 'plain.txt',
-		   });
-ok($INC{"CGI.pm"}, "CGI.pm was loaded");
+upload_file(
+			"plain.txt", 
+			{
+				long_filename_on_client => '/tmp/plain.txt',
+				short_filename_on_client => 'plain.txt',
+				module    => "CGI::Simple",
+				instance  => 1,
+			},
+		   );
 
-#upload_file("plain.txt");
+ok(not(defined $INC{"CGI.pm"}), "CGI.pm was not loaded");
+ok($INC{"CGI/Simple.pm"}, "CGI::Simple was loaded");
+
 
 

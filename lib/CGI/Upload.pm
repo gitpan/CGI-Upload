@@ -2,7 +2,6 @@ package CGI::Upload;
 use strict;
 
 use Carp;
-use CGI;
 use File::Basename;
 use File::MMagic;
 use HTTP::BrowserDetect;
@@ -16,7 +15,7 @@ require Exporter;
 @ISA = qw/ Exporter /;
 @EXPORT_OK = qw/ file_handle file_name file_type mime_magic mime_type query /;
 
-$VERSION = '1.06';
+$VERSION = '1.07';
 
 
 sub AUTOLOAD {
@@ -44,7 +43,7 @@ sub AUTOLOAD {
     #   returns a hash of all information determined about the uploaded file 
     #   which is be cached for subsequent requests.
 
-    $self->{'_CACHE'}->{$param} = $self->_handle_file( $param ) unless exists $self->{'_CACHE'}->{$param};
+    $self->{'_CACHE'}->{$param} = $self->_handle_file( $param ) unless exists $self->{'_CACHE'};
 
     #   Return the requested property of the uploaded file
 
@@ -88,7 +87,13 @@ sub _handle_file {
     my $buffer;
     my $fh = IO::File->new_tmpfile;
     binmode( $fh ) if $binmode;
-    while ( read( $cgi->param( $param ), $buffer, 1024 ) ) {
+
+
+	# it seems that in CGI::Simple for every call to ->upload it somehow resets
+	# the file handle. or I don't really know what is the problem with this code:
+    # while ( read( $cgi->upload( $param ) , $buffer, 1024 ) ) {
+	my $ourfh = $cgi->upload( $param );
+    while ( read( $ourfh , $buffer, 1024 ) ) {
         $fh->write( $buffer, length( $buffer ) );
     }
 
@@ -142,11 +147,37 @@ sub mime_magic {
 
 
 sub new {
-    my ( $class ) = @_;
+    my ( $class, $args ) = @_;
+
+	if ($args and 'HASH' ne ref $args) {
+		croak( __PACKAGE__, 'Argument to new should be a HASH reference');
+	}
+	my $query;
+	my $module = "CGI";  # default module is CGI.pm if for nothing else for backword compatibility
+	
+	if ($args and $args->{query}) {
+		$module = $args->{query};
+	}
+
+	if (ref $module) { # an object was passed to us
+		$query = $module;
+	} else { # assuming a name of a module was passed to us
+	
+		# load the requested module
+		(my $file = $module) =~ s{::}{/}g;
+		$file .= ".pm";
+		require $file;
+
+		if ("CGI::Simple" eq $module) {
+			$CGI::Simple::DISABLE_UPLOADS = 0;
+		} 
+		$query = new $module;
+	}
+			
 
     my $self = bless {
-        '_CACHE'    =>  {},
-        '_CGI'      =>  CGI->new,
+#        '_CACHE'    =>  {},
+        '_CGI'      =>  $query,
         '_MIME'     =>  ''
     }, $class;
     return $self;
@@ -210,6 +241,25 @@ In previously versions of B<CGI::Upload>, a mandatory argument of the B<CGI>
 object to be used was required.  This is no longer necessary due to the 
 singleton nature of B<CGI> objects.
 
+As an experiment, you can now use any kind of CGI.pm like module. The requirements
+are that it has to support the ->param method and the ->upload method returning a
+file handle. You can use this feature in two ways, either providing the name of
+the module or an already existing object. In the former case, CGI::Upload will try
+to I<require> the correct module and will I<croak> if cannot load that module.
+It has been tested with CGI.pm and CGI::Simple.
+Examples:
+
+ use CGI::Upload;
+ CGI::Upload->new({ query => "CGI::Simple"});
+
+or
+
+ use CGI::Upload;
+ use CGI::Simple;
+ $CGI::Simple::DISABLE_UPLOADS = 0;   # you have to set this before creating the instance
+ my $q = new CGI::Simple;
+ CGI::Upload->new({ query => $q});
+
 =item B<query>
 
 Returns the B<CGI> object used within the B<CGI::Upload> class.  
@@ -254,12 +304,17 @@ See L<File::MMagic> for further details.
 
 =back
 
+=head1 BUGS
+
+Please report bugs on RT: L<http://rt.cpan.org/NoAuth/Bugs.html?Dist=CGI-Upload>
+
 =head1 TODO
 
- Add more tests
+Explain why there is no 100% tests coverage...
 
- Add Module::Build support
+Add Module::Build support
 
+Add better MIME magic support (see request on RT)
 
 =head1 SEE ALSO
 
@@ -271,9 +326,9 @@ Copyright 2002-2004, Rob Casey, rob@cowsnet.com.au
 
 =head1 AUTHOR
 
-Rob Casey, rob@cowsnet.com.au
+Original author: Rob Casey, rob@cowsnet.com.au
 
-with some patches from Gabor Szabo, gabor@pti.co.il
-
+Current mainainer: Gabor Szabo, gabor@pti.co.il
 
 =cut
+

@@ -1,4 +1,4 @@
-use Test::More 'tests' => 2;
+use Test::More 'tests' => 3;
 
 BEGIN {
 
@@ -12,3 +12,8 @@ BEGIN {
 
 my $object = CGI::Upload->new;
 isa_ok( $object, 'CGI::Upload' );
+
+eval {
+	CGI::Upload->new(query => "CGI");
+};
+like($@, qr{Argument to new should be a HASH reference}, "Carp when new called with bad parameters");
