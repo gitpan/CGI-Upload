@@ -14,7 +14,8 @@ SKIP: {
 	skip "CGI::Simple needed for these tests", 7 unless is_installed("CGI::Simple");
 
 	$ENV{HTTP_USER_AGENT} = "Mozilla/5.0 (X11; U; Linux i686; en-US; rv:1.3) Gecko/20030312";
-	upload_file(
+	eval {
+		upload_file(
 			"plain.txt", 
 			{
 				long_filename_on_client => '/tmp/plain.txt',
@@ -22,7 +23,11 @@ SKIP: {
 				module    => "CGI::Simple",
 				instance  => 1,
 			},
-		   );
+		);
+	};
+	if ($@ and $@ =~ /^CGI::Simple must be at least version 0.075$/) {
+		skip "CGI::Simple need to be at least version 0.075", 7;
+	}
 
 	ok(not(defined $INC{"CGI.pm"}), "CGI.pm was not loaded");
 	ok($INC{"CGI/Simple.pm"}, "CGI::Simple was loaded");

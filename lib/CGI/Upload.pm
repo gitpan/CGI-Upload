@@ -15,7 +15,7 @@ require Exporter;
 @ISA = qw/ Exporter /;
 @EXPORT_OK = qw/ file_handle file_name file_type mime_magic mime_type query /;
 
-$VERSION = '1.09';
+$VERSION = '1.10';
 
 
 sub AUTOLOAD {
@@ -161,6 +161,7 @@ sub new {
 
 	if (ref $module) { # an object was passed to us
 		$query = $module;
+		$module = ref $module;
 	} else { # assuming a name of a module was passed to us
 	
 		# load the requested module
@@ -168,12 +169,16 @@ sub new {
 		$file .= ".pm";
 		require $file;
 
+
 		if ("CGI::Simple" eq $module) {
 			$CGI::Simple::DISABLE_UPLOADS = 0;
 		} 
 		$query = new $module;
 	}
 			
+	if ($module eq "CGI::Simple" and $CGI::Simple::VERSION < '0.075') {
+		die "CGI::Simple must be at least version 0.075\n";
+	}
 
     my $self = bless {
 #        '_CACHE'    =>  {},
@@ -246,7 +251,12 @@ are that it has to support the ->param method and the ->upload method returning 
 file handle. You can use this feature in two ways, either providing the name of
 the module or an already existing object. In the former case, CGI::Upload will try
 to I<require> the correct module and will I<croak> if cannot load that module.
-It has been tested with CGI.pm and CGI::Simple.
+It has been tested with CGI.pm and CGI::Simple. 
+
+We tested it with CGI::Simple 0.075. 
+
+It is known to break with version 0.071 of CGI::Simple so we issue our own die in such case. 
+
 Examples:
 
  use CGI::Upload;
@@ -364,6 +374,8 @@ Current mainainer: Gabor Szabo, gabor@pti.co.il
 Thanks to
 
 Mark Stosberg for suggestions.
+
+and to the CPAN Testers for testing.
 
 =head1 LICENSE
 

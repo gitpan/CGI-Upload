@@ -17,7 +17,7 @@ upload_file(
 				long_filename_on_client => '/tmp/plain.txt',
 				short_filename_on_client => 'plain.txt',
 				module    => "CGI",
-				instance  => 0,
+				instance  => 1,
 			},
 		   );
 

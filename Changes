@@ -56,4 +56,8 @@ Revision history for Perl extension CGI::Upload
 	- Adding Build.PL support
 	- Add explicit license to module both in pod and in Build.PL
 
+1.10 Wed Jun 16 02:15:42 GMT+2 2004
+	- Give a meaningfull error message when using with old version of CGI::Simple
+	- Test should not fail when using with old version of CGI::Simple
+
 
