@@ -18,3 +18,9 @@ Revision history for Perl extension CGI::Upload
 
 1.03  Mon May 27 23:15:00 2002
         - included bug fix for binmode handling on Windows systems; rob@cowsnet.com.au
+
+1.04  Wed Sep 20 23:10:00 2002
+        - major code refactoring, incorporated AUTOLOAD functions; rob@cowsnet.com.au
+	- included basic module tests; rob@cowsnet.com.au
+        - updated Makefile.PL; rob@cowsnet.com.au
+	- updated documentation; rob@cowsnet.com.au

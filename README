@@ -2,84 +2,81 @@ NAME
     CGI::Upload - CGI class for handling browser file uploads
 
 SYNOPSIS
-      use CGI;
-      use CGI::Upload;
+     use CGI::Upload;
 
-      my $cgi = CGI->new;
-      my $upload = CGI::Upload->new( $cgi );
+     my $upload = CGI::Upload->new;
 
-      my $file_name = $upload->file_name( 'field_name' );
-      my $file_type = $upload->file_type( 'field_name' );
+     my $file_name = $upload->file_name('field');
+     my $file_type = $upload->file_type('field');
 
-      $upload->mime_magic( '/path/to/mime.types' );
-      my $mime_type = $upload->mime_type( 'field_name' );
+     $upload->mime_magic('/path/to/mime.types');
+     my $mime_type = $upload->mime_type('field');
 
-      my $file_handle = $upload->file_handle( 'field_name' );
+     my $file_handle = $upload->file_handle('field');
 
 DESCRIPTION
-    This module has been written to provide a simple and secure
-    manner by which to handle files uploaded in multipart/form-data
-    requests through a web browser. The primary advantage which this
-    module offers over existing modules is the single interface
-    providing the most often required information regarding files
-    uploaded through multipart/form-data requests.
+    This module has been written to provide a simple and secure manner by
+    which to handle files uploaded in multipart/form-data requests through a
+    web browser. The primary advantage which this module offers over
+    existing modules is the single interface which it provides for the most
+    often required information regarding files uploaded in this manner.
 
-    Building on the CGI manpage and the File::MMagic manpage, this
-    module offers a very tidy and succinct interface for handling of
-    file uploads.
+    This module builds upon primarily the CGI and File::MMagic modules and
+    offers some tidy and succinct methods for the handling of files uploaded
+    via multipart/form-data requests.
 
 METHODS
-    The following methods are available through this module for use
-    in CGI scripts and can be exported upon request.
+    The following methods are available through this module for use in CGI
+    scripts and can be exported into the calling namespace upon request.
 
-    new( $cgi )
-        This method creates and returns a new CGI::Upload object,
-        the only mandatory argument to which is a CGI.pm object.
-        This is in part because only a single CGI.pm object can be
-        initiated within a given CGI script.
+    new This object constructor method creates and returns a new CGI::Upload
+        object. In previously versions of CGI::Upload, a mandatory argument
+        of the CGI object to be used was required. This is no longer
+        necessary due to the singleton nature of CGI objects.
 
-    file_handle( 'field_name' )
-        This method returns the file handle to a temporary file
-        containing the file uploaded through the form input field
-        named 'field_name'.
+    query
+        Returns the CGI object used within the CGI::Upload class.
 
-    file_name( 'field_name' )
-        This method returns the file name of the file uploaded
-        through the form input field named 'field_name' - This file
-        name does not reflect the local temporary file name of the
-        uploaded file, but that supplied by the client web browser.
+    file_handle('field')
+        This method returns the file handle to the temporary file containing
+        the file uploaded through the form input field named 'field'. This
+        temporary file is generated using the new_tmpfile method of IO::File
+        and is anonymous in nature, where possible.
 
-    file_type( 'field_name' )
-        This method returns the file type of the file uploaded as
-        indicated by the file extension - This does not necessarily
-        reflect the nature of the file uploaded, but allows CGI
-        scripts to perform cursory validation on the file uploaded.
+    file_name('field')
+        This method returns the file name of the file uploaded through the
+        form input field named 'field' - This file name does not reflect the
+        local temporary filename of the uploaded file, but that for the file
+        supplied by the client web browser.
 
-    mime_magic( '/path/to/mime.types' )
-        This method sets and/or returns the external magic mime
-        types file to be used for identification of files via the
-        mime_type method. By default, identification is based upon
-        internal mime types defined within the File::MMagic module.
+    file_type('field')
+        This method returns the file type of the file uploaded as specified
+        by the filename extension - Please note that this does not
+        necessarily reflect the nature of the file uploaded, but allows CGI
+        scripts to perform cursory validation of the file type of the
+        uploaded file.
+
+    mime_magic('/path/to/mime.types')
+        This method sets and/or returns the external magic mime types file
+        to be used for the identification of files via the mime_type method.
+        By default, MIME identification is based upon internal mime types
+        defined within the File::MMagic module.
 
         See the File::MMagic manpage for further details.
 
-    mime_type( 'field_name' )
-        This method returns the file type of the file uploaded
-        through the form input field named 'field_name' as indicated
-        by the file magic numbers. This is the best means by which
-        to validate the nature of the uploaded file.
+    mime_type('field')
+        This method returns the MIME type of the file uploaded through the
+        form input field named 'field' as determined by file magic numbers.
+        This is the best means by which to validate the nature of the
+        uploaded file.
 
         See the File::MMagic manpage for further details.
 
 SEE ALSO
-    the CGI manpage, the File::MMagic manpage, the HTTP::File
-    manpage
+    the CGI manpage, the File::MMagic manpage, the HTTP::File manpage
 
 COPYRIGHT
     Copyright 2002, Rob Casey, rob@cowsnet.com.au
-
-    This library is free software; you can redistribute it and/or
-    modify it under the same terms as Perl itself.
 
 AUTHOR
     Rob Casey, rob@cowsnet.com.au

@@ -2,10 +2,8 @@ use ExtUtils::MakeMaker;
 WriteMakefile(
     'NAME'                  =>  'CGI::Upload',
     'PREREQ_PM'             =>  {
-        'CGI'                   =>  0,
-        'File::Basename'        =>  0,
-        'File::MMagic'          =>  0,   #    File::MMagic binmode support added 0.15
-        'HTTP::BrowserDetect'   =>  0
+        'File::MMagic'          =>  1.16,
+        'HTTP::BrowserDetect'   =>  0.97
     },
-    'VERSION_FROM'          =>  'Upload.pm'
+    'VERSION_FROM'          =>  'lib/CGI/Upload.pm'
 );
