@@ -4,3 +4,11 @@ Makefile.PL
 README
 lib/CGI/Upload.pm
 t/module.t
+t/upload.t
+t/upload_any.t
+t/upload_windows.t
+t/lib/CGI/Upload/Test.pm
+local/plain.txt
+local/plain.txt_multi
+
+META.yml                                 Module meta-data (added by MakeMaker)

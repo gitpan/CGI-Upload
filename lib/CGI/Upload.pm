@@ -1,4 +1,5 @@
 package CGI::Upload;
+use strict;
 
 use Carp;
 use CGI;
@@ -15,7 +16,7 @@ require Exporter;
 @ISA = qw/ Exporter /;
 @EXPORT_OK = qw/ file_handle file_name file_type mime_magic mime_type query /;
 
-$VERSION = '1.04';
+$VERSION = '1.06';
 
 
 sub AUTOLOAD {
@@ -36,7 +37,7 @@ sub AUTOLOAD {
     #   CGI object
 
     my $cgi = $self->query;
-    return undef unless defined $cgi->param( $param );
+    return unless defined $cgi->param( $param );
 
     #   The determination of all information about the uploaded file is 
     #   performed by a private subroutine called _handle_file - This subroutine 
@@ -61,36 +62,24 @@ sub _handle_file {
     #   Determine and set the appropriate file system parsing routines for the 
     #   uploaded path name based upon the HTTP client header information.
 
-    fileparse_set_fstype(
-        sub {
-            my $browser = HTTP::BrowserDetect->new;
-            return 'MSWin32' if $browser->windows;
-            return 'MacOS' if $browser->mac;
-            $^O;
-        }
-    );
-    my @file = fileparse( $cgi->param( $param ), '\.[^\.]*' );
+    my $client_os = $^O;
+    my $browser = HTTP::BrowserDetect->new;
+    $client_os = 'MSWin32' if $browser->windows;
+    $client_os = 'MacOS' if $browser->mac;
+    fileparse_set_fstype($client_os);
+    my @file = fileparse( $cgi->param( $param ), '\.[^.]*' );
 
     #   Return an undefined value if the file name cannot be parsed from the 
     #   file field form parameter.
 
-    return undef unless $file[0];
+    return unless $file[0];
 
     #   Determine whether binary mode is required in the handling of uploaded 
-    #   files - This subroutine is based upon the $CGI::needs_binmode 
-    #   subroutine in CGI.pm
-    #
-    #   Binary mode is deemed to be required for Windows, OS/2 and VMS 
-    #   platforms.
+    #   files - 
+    #   Binary mode is deemed to be required when we (the server) are running one one 
+	#   of these platforms: for Windows, OS/2 and VMS 
 
-    my $binmode = sub {
-        my $OS;
-        unless ( $OS = $^O ) {
-            require Config;
-            $OS = $Config::Config{'osname'};
-        }
-        return ( ( $OS =~ /(OS2)|(VMS)|(Win)/i ) ? 1 : 0 );
-    };
+    my $binmode = $^O =~ /OS2|VMS|Win|DOS|Cygwin/i;
 
     #   Pass uploaded file into temporary file handle - This is somewhat 
     #   redundant given the temporary file generation within CGI.pm, however is 
@@ -265,16 +254,26 @@ See L<File::MMagic> for further details.
 
 =back
 
+=head1 TODO
+
+ Add more tests
+
+ Add Module::Build support
+
+
 =head1 SEE ALSO
 
 L<CGI>, L<File::MMagic>, L<HTTP::File>
 
 =head1 COPYRIGHT
 
-Copyright 2002, Rob Casey, rob@cowsnet.com.au
+Copyright 2002-2004, Rob Casey, rob@cowsnet.com.au
 
 =head1 AUTHOR
 
 Rob Casey, rob@cowsnet.com.au
+
+with some patches from Gabor Szabo, gabor@pti.co.il
+
 
 =cut

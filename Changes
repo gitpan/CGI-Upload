@@ -21,10 +21,18 @@ Revision history for Perl extension CGI::Upload
 
 1.04  Wed Sep 20 23:10:00 2002
         - major code refactoring, incorporated AUTOLOAD functions; rob@cowsnet.com.au
-	- included basic module tests; rob@cowsnet.com.au
+        - included basic module tests; rob@cowsnet.com.au
         - updated Makefile.PL; rob@cowsnet.com.au
-	- updated documentation; rob@cowsnet.com.au
+        - updated documentation; rob@cowsnet.com.au
 
 1.05  Sun Nov 24 22:15:00 2002
-	- included DESTROY subroutine; rob@cowsnet.com.au
-	- updated module tests; rob@cowsnet.com.au
+        - included DESTROY subroutine; rob@cowsnet.com.au
+        - updated module tests; rob@cowsnet.com.au
+
+1.06 Mon May 31 20:58:15 GMT+2 2004
+        - adding some tests
+        - Apply patches for bugs reported in RT #1854 and #5823
+        - Explicit undef as return value was replaced by return with nothing. This might cause bad code
+		  such as this @a = $upload->file_handle;      that relies on undef in list context to fail.
+        - (blame me: gabor@pti.co.il)
+
