@@ -12,7 +12,7 @@ use vars qw/ $VERSION @ISA @EXPORT @EXPORT_OK /;
 
 @EXPORT_OK = qw/ file_handle file_name file_type mime_magic mime_type query /;
 
-$VERSION = '1.02';
+$VERSION = '1.03';
 
 
 sub _handle_file {
@@ -69,7 +69,7 @@ sub _handle_file {
     #
     my $buffer;
     my $fh = IO::File->new_tmpfile;
-    $fh->binmode if $binmode;
+    binmode($fh) if $binmode;
     while (read($cgi->param($param), $buffer, 1024)) {
         $fh->write($buffer, length($buffer));
     }
@@ -80,7 +80,7 @@ sub _handle_file {
     #   during all operations.
     #
     $fh->seek(0, 0);
-    $fh->binmode if $binmode;
+    binmode($fh) if $binmode;
 
     #   Private hash containing information about the uploaded file
     #
@@ -101,7 +101,7 @@ sub _handle_file {
     #   the file pointer following its operation.
     #
     $fh->seek(0, 0);
-    $fh->binmode if $binmode;
+    binmode($fh) if $binmode;
 
     return $object;
 }
