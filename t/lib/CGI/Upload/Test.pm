@@ -2,9 +2,10 @@ package CGI::Upload::Test;
 use strict;
 use base 'Exporter';
 use vars qw(@EXPORT);
-@EXPORT = qw(&upload_file);
+@EXPORT = qw(&upload_file &is_installed);
 
 use Test::More;
+use File::Spec::Functions qw(catfile);
 
 # subroutine to upload any file (and prepare the multi-part version of it on the fly).
 # For some reason you cannot run this function twice !?? What bug is this ?
@@ -94,6 +95,18 @@ sub upload_file {
 	};
 	like($@, qr{CGI::Upload->AUTOLOAD : Unsupported object method within module - invalid_call}, "Invalid call trapped");
 	ok(not(defined $u->file_name("other_field")), "returns undef");
+}
+
+
+# get a module name such as CGI::Simple and return true if it can be found in the current @INC
+sub is_installed {
+	my $module = shift;
+	
+	my $file = catfile split /::/, $module;
+	$file .= ".pm";
+	
+	my $found = 0;
+	return grep {-e "$_/$file"} @INC;
 }
 
 1;

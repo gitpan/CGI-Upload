@@ -46,4 +46,8 @@ Revision history for Perl extension CGI::Upload
 	- Add (experiamental) support for CGI::Simple and theoretically to other CGI-like modules.
 	  CGI.pm and CGI::Simple are actually tested.
 
+1.08 Tue Jun  8 21:07:44 GMT+2 2004
+	- skip CGI::Simple tests if CGI::Simple is not installed on the system
+	- Add to TODO list
+
 

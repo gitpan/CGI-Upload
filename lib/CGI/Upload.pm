@@ -15,7 +15,7 @@ require Exporter;
 @ISA = qw/ Exporter /;
 @EXPORT_OK = qw/ file_handle file_name file_type mime_magic mime_type query /;
 
-$VERSION = '1.07';
+$VERSION = '1.08';
 
 
 sub AUTOLOAD {
@@ -316,9 +316,42 @@ Add Module::Build support
 
 Add better MIME magic support (see request on RT)
 
+Test if multiple file uploads are supported and fix this if they are not.
+
+Apache::Request support
+
+CGI::Minimal support
+
+Example code from  Mark Stosberg (CGI::Uploader):
+
+  if ($q->isa('CGI::Simple') ) {
+           $fh = $q->upload($filename); 
+           $mt = $q->upload_info($filename, 'mime' );
+
+           if (!$fh && $q->cgi_error) {
+                   warn $q->cgi_error && return undef;
+           }
+   }
+   elsif ( $q->isa('Apache::Request') ) {
+            my $upload = $q->upload($file_field);
+                $fh = $upload->fh;
+                $mt = $upload->type;
+   }
+   # default to CGI.pm behavior
+   else {
+           $fh = $q->upload($file_field);
+           $mt = $q->uploadInfo($fh)->{'Content-Type'} if $q->uploadInfo($fh);
+
+           if (!$fh && $q->cgi_error) {
+                   warn $q->cgi_error && return undef;
+           }
+   }
+
+
 =head1 SEE ALSO
 
 L<CGI>, L<File::MMagic>, L<HTTP::File>
+
 
 =head1 COPYRIGHT
 
@@ -329,6 +362,10 @@ Copyright 2002-2004, Rob Casey, rob@cowsnet.com.au
 Original author: Rob Casey, rob@cowsnet.com.au
 
 Current mainainer: Gabor Szabo, gabor@pti.co.il
+
+Thanks to
+
+Mark Stosberg for suggestions
 
 =cut
 
