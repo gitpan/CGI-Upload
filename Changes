@@ -8,3 +8,10 @@ Revision history for Perl extension CGI::Upload
         - included binmode handling for temporary files; rob@cowsnet.com.au
         - included call to File::Basename::fileparse_set_fstype; rob@cowsnet.com.au
         - modified suffix regular expression in File::Basename::fileparse arguments; rob@cowsnet.com.au
+
+1.02  Tue May 07 14:05:00 2002
+        - included query method and optional CGI.pm parameter to new constructor; rob@cowsnet.com.au
+        - updated _handle_file to include bug fix by Curtis "Ovid" Poe (poec@yahoo.com); rob@cowsnet.com.au
+        - updated _handle_file to include binmode determination; rob@cowsnet.com.au
+        - updated Makefile.PL; rob@cowsnet.com.au
+        - updated documentation; rob@cowsnet.com.au

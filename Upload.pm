@@ -1,6 +1,7 @@
 package CGI::Upload;
 
 use Carp;
+use CGI;
 use File::Basename;
 use File::MMagic;
 use HTTP::BrowserDetect;
@@ -9,23 +10,29 @@ use IO::File;
 use strict;
 use vars qw/ $VERSION @ISA @EXPORT @EXPORT_OK /;
 
-@EXPORT_OK = qw/ file_handle file_name file_type mime_magic mime_type /;
+@EXPORT_OK = qw/ file_handle file_name file_type mime_magic mime_type query /;
 
-$VERSION = '1.01';
+$VERSION = '1.02';
 
 
 sub _handle_file {
     my $self = shift;
     my ($cgi, $param) = @_;
 
+    #   Retrieve MIME magic file and construct File::MMagic object for
+    #   MIME type identification of uploaded file
+    #
     my $mime_magic = $self->mime_magic;
     my $magic = 
         ( length $mime_magic ) ? 
         File::MMagic->new( $mime_magic ) :
         File::MMagic->new;
 
+    #   Determine and set the file system parsing routines based upon
+    #   HTTP client header information.
+    #
     fileparse_set_fstype(
-        do {
+        sub {
             my $browser = HTTP::BrowserDetect->new;
             return 'MSWin32' if $browser->windows;
             return 'MacOS' if $browser->mac;
@@ -34,25 +41,67 @@ sub _handle_file {
     );
     my @file = fileparse($cgi->param($param), '\.[^\.]*');
 
+    #   Return undef if file name cannot be parsed from file field 
+    #   parameter
+    #
     return undef unless $file[0];
 
+    #   Determine whether binmode is required in handling uploaded 
+    #   files - Based upon the $CGI::needs_binmode determination code in
+    #   CGI.pm
+    #
+    my $binmode = sub {
+        my $OS;
+        unless ($OS = $^O) {
+            require Config;
+            $OS = $Config::Config{'osname'};
+        }
+        return (($OS =~ /(OS2)|(VMS)|(Win)/i) ? 1 : 0);
+    };
+
+    #   Pass uploaded file into temporary file handle - This is somewhat
+    #   redundant given the temporary file generation within CGI.pm,
+    #   however is included to reduce dependence upon this module to a
+    #   certain extent.  
+    #
+    #   Future development for this module may include upload handling
+    #   completely independent of CGI.pm.
+    #
     my $buffer;
     my $fh = IO::File->new_tmpfile;
-    $fh->binmode if $CGI::needs_binmode;
+    $fh->binmode if $binmode;
     while (read($cgi->param($param), $buffer, 1024)) {
         $fh->write($buffer, length($buffer));
     }
-    $fh->seek(0, 0);
-    $fh->binmode if $CGI::needs_binmode;
 
+    #   Hold temporary file open, move file pointer to start - As the
+    #   temporary file handle returned by the IO::File::new_tmpfile is
+    #   only accessible via this handle, the file handle is held open 
+    #   during all operations.
+    #
+    $fh->seek(0, 0);
+    $fh->binmode if $binmode;
+
+    #   Private hash containing information about the uploaded file
+    #
     my $object = {
         'file_handle'   =>  $fh,
         'file_name'     =>  $file[0] . $file[2],
         'file_type'     =>  substr(lc $file[2], 1),
         'mime_type'     =>  $magic->checktype_filehandle($fh)
     };
+
+    #   Hold temporary file open, move file pointer to start - As the
+    #   temporary file handle returned by the IO::File::new_tmpfile is
+    #   only accessible via this handle, the file handle is held open 
+    #   during all operations.
+    #
+    #   The importance of this operation here is due to the MIME
+    #   detection performed by File::MMagic which may or may not reset
+    #   the file pointer following its operation.
+    #
     $fh->seek(0, 0);
-    $fh->binmode if $CGI::needs_binmode;
+    $fh->binmode if $binmode;
 
     return $object;
 }
@@ -63,11 +112,22 @@ sub file_handle {
     my ($param) = @_;
     my $cgi = $self->{'_CGI'};
 
+    #   Return undef if the requested parameter does not exist within the 
+    #   CGI object
+    #
     return undef unless defined $cgi->param($param);
 
+    #   The generation of upload file information is performed by a
+    #   private sub-routine _handle_file - The advantage of this is that
+    #   this one routine can generate this information from the CGI
+    #   object and cache it within a private hash for subsequent 
+    #   information requests.
+    #
     $self->{'_PARAMS'}->{$param} = $self->_handle_file( $cgi, $param)
         unless exists $self->{'_PARAMS'}->{$param};
 
+    #   Return file handle for uploaded file
+    #
     return $self->{'_PARAMS'}->{$param}->{'file_handle'};
 }
 
@@ -77,11 +137,22 @@ sub file_name {
     my ($param) = @_;
     my $cgi = $self->{'_CGI'};
 
+    #   Return undef if the requested parameter does not exist within 
+    #   CGI object
+    #
     return undef unless defined $cgi->param($param);
 
+    #   The generation of upload file information is performed by a
+    #   private sub-routine _handle_file - The advantage of this is that
+    #   this one routine can generate this information from the CGI
+    #   object and cache it within a private hash for subsequent 
+    #   information requests.
+    #
     $self->{'_PARAMS'}->{$param} = $self->_handle_file( $cgi, $param)
         unless exists $self->{'_PARAMS'}->{$param};
 
+    #   Return supplied file name for uploaded file
+    #
     return $self->{'_PARAMS'}->{$param}->{'file_name'};
 }
 
@@ -91,11 +162,22 @@ sub file_type {
     my ($param) = @_;
     my $cgi = $self->{'_CGI'};
 
+    #   Return undef if the requested parameter does not exist within 
+    #   CGI object
+    #
     return undef unless defined $cgi->param($param);
 
+    #   The generation of upload file information is performed by a
+    #   private sub-routine _handle_file - The advantage of this is that
+    #   this one routine can generate this information from the CGI
+    #   object and cache it within a private hash for subsequent 
+    #   information requests.
+    #
     $self->{'_PARAMS'}->{$param} = $self->_handle_file( $cgi, $param)
         unless exists $self->{'_PARAMS'}->{$param};
 
+    #   Return file type for uploaded file
+    #
     return $self->{'_PARAMS'}->{$param}->{'file_type'};
 }
 
@@ -103,6 +185,11 @@ sub file_type {
 sub mime_magic {
     my $self = shift;
     my ($magic) = @_;
+
+    #   If file name parameter is passed and file exists, assign this to
+    #   private hash for later passing into File::MMagic within the 
+    #   _handle_file method.
+    #
     if (defined $magic) {
         $self->{'_MMAGIC'} = $magic if -e $magic;
     }
@@ -115,11 +202,22 @@ sub mime_type {
     my ($param) = @_;
     my $cgi = $self->{'_CGI'};
 
+    #   Return undef if the requested parameter does not exist within 
+    #   CGI object
+    #
     return undef unless defined $cgi->param($param);
 
+    #   The generation of upload file information is performed by a
+    #   private sub-routine _handle_file - The advantage of this is that
+    #   this one routine can generate this information from the CGI
+    #   object and cache it within a private hash for subsequent 
+    #   information requests.
+    #
     $self->{'_PARAMS'}->{$param} = $self->_handle_file( $cgi, $param)
         unless exists $self->{'_PARAMS'}->{$param};
 
+    #   Return mime type for uploaded file
+    #
     return $self->{'_PARAMS'}->{$param}->{'mime_type'};
 }
 
@@ -129,8 +227,12 @@ sub new {
     $class = ref $class if ref $class;
 
     my ($cgi) = @_;
-    unless (( defined $cgi ) && ( $cgi->isa('CGI') )) {
-        croak( "CGI::Upload->new : Single argument to method should be CGI.pm object" );
+    if (defined $cgi) {
+        if (!$cgi->isa('CGI')) {
+            croak( "CGI::Upload->new : Single argument to method should be CGI.pm object" );
+        }
+    } else {
+        $cgi = CGI->new;
     }
     my $self = bless {
         '_CGI'      =>  $cgi,
@@ -138,6 +240,12 @@ sub new {
         '_PARAMS'   =>  {}
     }, $class;
     return $self;
+}
+
+
+sub query {
+    my $self = shift;
+    return $self->{'_CGI'};
 }
 
 
@@ -187,10 +295,22 @@ CGI scripts and can be exported upon request.
 
 =item B<new( $cgi )>
 
-This method creates and returns a new CGI::Upload object, the only
-mandatory argument to which is a CGI.pm object.  This is in part
-because only a single CGI.pm object can be initiated within a given
-CGI script.
+This method creates and returns a new CGI::Upload object.  In 
+previously versions of CGI::Upload, a mandatory argument of the
+CGI.pm object to be used was required.  This is no longer
+necessary with initiation of a new CGI.pm object within the 
+CGI::Upload constructor if one is not passed as an argument to
+the constructor.  This created CGI.pm is subsequently available
+via the query method.
+
+Remember that only a single CGI.pm object can be initiated within 
+a given CGI script.
+
+=item B<query()>
+
+Returns the CGI.pm object used for the CGI::Upload class.  If a 
+CGI.pm object was passed to the CGI::Upload constructor, it is 
+this object which is returned by this method.
 
 =item B<file_handle( 'field_name' )>
 
