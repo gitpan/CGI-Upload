@@ -1,13 +1,17 @@
-# http://module-build.sourceforge.net/META-spec.html
-#XXXXXXX This is a prototype!!!  It will change in the future!!! XXXXX#
-name:         CGI-Upload
-version:      1.08
-version_from: lib/CGI/Upload.pm
-installdirs:  site
+--- #YAML:1.0
+name: CGI-Upload
+version: 1.09
+author: Rob Casey <rob.casey@bluebottle.com>
+abstract: CGI class for handling browser file uploads
+license: perl
 requires:
-    CGI:                           2.47
-    File::MMagic:                  1.16
-    HTTP::BrowserDetect:           0.97
-
-distribution_type: module
-generated_by: ExtUtils::MakeMaker version 6.21
+  CGI: 2.47
+  Carp: 0
+  File::MMagic: 1.16
+  HTTP::BrowserDetect: 0.97
+  Test::More: 0
+provides:
+  CGI::Upload:
+    file: lib/CGI/Upload.pm
+    version: 1.09
+generated_by: Module::Build version 0.25

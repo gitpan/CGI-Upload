@@ -15,7 +15,7 @@ require Exporter;
 @ISA = qw/ Exporter /;
 @EXPORT_OK = qw/ file_handle file_name file_type mime_magic mime_type query /;
 
-$VERSION = '1.08';
+$VERSION = '1.09';
 
 
 sub AUTOLOAD {
@@ -312,8 +312,6 @@ Please report bugs on RT: L<http://rt.cpan.org/NoAuth/Bugs.html?Dist=CGI-Upload>
 
 Explain why there is no 100% tests coverage...
 
-Add Module::Build support
-
 Add better MIME magic support (see request on RT)
 
 Test if multiple file uploads are supported and fix this if they are not.
@@ -355,17 +353,21 @@ L<CGI>, L<File::MMagic>, L<HTTP::File>
 
 =head1 COPYRIGHT
 
-Copyright 2002-2004, Rob Casey, rob@cowsnet.com.au
+Copyright 2002-2004, Rob Casey, rob.casey@bluebottle.com
 
 =head1 AUTHOR
 
-Original author: Rob Casey, rob@cowsnet.com.au
+Original author: Rob Casey, rob.casey@bluebottle.com 
 
 Current mainainer: Gabor Szabo, gabor@pti.co.il
 
 Thanks to
 
-Mark Stosberg for suggestions
+Mark Stosberg for suggestions.
+
+=head1 LICENSE
+
+This library is free software; you can redistribute it and/or modify it under the same terms as Perl itself.
 
 =cut
 

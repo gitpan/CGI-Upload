@@ -34,6 +34,25 @@ METHODS
         of the CGI object to be used was required. This is no longer
         necessary due to the singleton nature of CGI objects.
 
+        As an experiment, you can now use any kind of CGI.pm like module.
+        The requirements are that it has to support the ->param method and
+        the ->upload method returning a file handle. You can use this
+        feature in two ways, either providing the name of the module or an
+        already existing object. In the former case, CGI::Upload will try to
+        *require* the correct module and will *croak* if cannot load that
+        module. It has been tested with CGI.pm and CGI::Simple. Examples:
+
+         use CGI::Upload;
+         CGI::Upload->new({ query => "CGI::Simple"});
+
+        or
+
+         use CGI::Upload;
+         use CGI::Simple;
+         $CGI::Simple::DISABLE_UPLOADS = 0;   # you have to set this before creating the instance
+         my $q = new CGI::Simple;
+         CGI::Upload->new({ query => $q});
+
     query
         Returns the CGI object used within the CGI::Upload class.
 
@@ -62,7 +81,7 @@ METHODS
         By default, MIME identification is based upon internal mime types
         defined within the File::MMagic module.
 
-        See the File::MMagic manpage for further details.
+        See File::MMagic for further details.
 
     mime_type('field')
         This method returns the MIME type of the file uploaded through the
@@ -70,17 +89,65 @@ METHODS
         This is the best means by which to validate the nature of the
         uploaded file.
 
-        See the File::MMagic manpage for further details.
+        See File::MMagic for further details.
+
+BUGS
+    Please report bugs on RT:
+    <http://rt.cpan.org/NoAuth/Bugs.html?Dist=CGI-Upload>
+
+TODO
+    Explain why there is no 100% tests coverage...
+
+    Add explicite license to module both in pod and in Makefile.PL
+
+    Add Module::Build support
+
+    Add better MIME magic support (see request on RT)
+
+    Test if multiple file uploads are supported and fix this if they are
+    not.
+
+    Apache::Request support
+
+    CGI::Minimal support
+
+    Example code from Mark Stosberg (CGI::Uploader):
+
+      if ($q->isa('CGI::Simple') ) {
+               $fh = $q->upload($filename); 
+               $mt = $q->upload_info($filename, 'mime' );
+
+               if (!$fh && $q->cgi_error) {
+                       warn $q->cgi_error && return undef;
+               }
+       }
+       elsif ( $q->isa('Apache::Request') ) {
+                my $upload = $q->upload($file_field);
+                    $fh = $upload->fh;
+                    $mt = $upload->type;
+       }
+       # default to CGI.pm behavior
+       else {
+               $fh = $q->upload($file_field);
+               $mt = $q->uploadInfo($fh)->{'Content-Type'} if $q->uploadInfo($fh);
+
+               if (!$fh && $q->cgi_error) {
+                       warn $q->cgi_error && return undef;
+               }
+       }
 
 SEE ALSO
-    the CGI manpage, the File::MMagic manpage, the HTTP::File manpage
+    CGI, File::MMagic, HTTP::File
 
 COPYRIGHT
-    Copyright 2002, Rob Casey, rob@cowsnet.com.au
+    Copyright 2002-2004, Rob Casey, rob@cowsnet.com.au
 
 AUTHOR
-    Rob Casey, rob@cowsnet.com.au
+    Original author: Rob Casey, rob@cowsnet.com.au
 
-	with some patches from Gabor Szabo, gabor@pti.co.il
+    Current mainainer: Gabor Szabo, gabor@pti.co.il
 
+    Thanks to
+
+    Mark Stosberg for suggestions
 

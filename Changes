@@ -50,4 +50,10 @@ Revision history for Perl extension CGI::Upload
 	- skip CGI::Simple tests if CGI::Simple is not installed on the system
 	- Add to TODO list
 
+1.09 Tue Jun 15 09:02:35 GMT+2 2004
+	- fixing binmode in Test.pm to work on Windows as well
+	- Updating the e-mail of Rob so he can get SPAM on his new address too.
+	- Adding Build.PL support
+	- Add explicit license to module both in pod and in Build.PL
+
 
