@@ -1,32 +1,14 @@
-use strict;
-use vars qw/ $loaded /;
-
+use Test::More 'tests' => 2;
 
 BEGIN {
-    $| = 1;
+
+    #   Test 1 - Ensure that the CGI::Upload module can be loaded
+
+    use_ok( 'CGI::Upload' );
 }
 
+#   Test 2 - Create a new object and confirm its inheritance as CGI::Upload
+#   object
 
-END {
-    ok(0) unless $loaded;
-}
-
-
-my $count = 1;
-sub ok {
-    shift or print "not ";
-    print "ok $count\n";
-    ++$count;
-}
-
-
-print "1..1\n";
-
-use CGI::Upload;
-
-$loaded = 1;
-
-ok(1);
-
-
-__END__
+my $object = CGI::Upload->new;
+isa_ok( $object, 'CGI::Upload' );

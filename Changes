@@ -24,3 +24,7 @@ Revision history for Perl extension CGI::Upload
 	- included basic module tests; rob@cowsnet.com.au
         - updated Makefile.PL; rob@cowsnet.com.au
 	- updated documentation; rob@cowsnet.com.au
+
+1.05  Sun Nov 24 22:15:00 2002
+	- included DESTROY subroutine; rob@cowsnet.com.au
+	- updated module tests; rob@cowsnet.com.au

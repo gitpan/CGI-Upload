@@ -19,7 +19,7 @@ $VERSION = '1.04';
 
 
 sub AUTOLOAD {
-    my ($self, $param) = @_;
+    my ( $self, $param ) = @_;
 
     #   Parse method name from $AUTOLOAD variable
 
@@ -36,14 +36,14 @@ sub AUTOLOAD {
     #   CGI object
 
     my $cgi = $self->query;
-    return undef unless defined $cgi->param($param);
+    return undef unless defined $cgi->param( $param );
 
     #   The determination of all information about the uploaded file is 
     #   performed by a private subroutine called _handle_file - This subroutine 
     #   returns a hash of all information determined about the uploaded file 
     #   which is be cached for subsequent requests.
 
-    $self->{'_CACHE'}->{$param} = $self->_handle_file($param) unless exists $self->{'_CACHE'}->{$param};
+    $self->{'_CACHE'}->{$param} = $self->_handle_file( $param ) unless exists $self->{'_CACHE'}->{$param};
 
     #   Return the requested property of the uploaded file
 
@@ -51,8 +51,11 @@ sub AUTOLOAD {
 }
 
 
+sub DESTROY {}
+
+
 sub _handle_file {
-    my ($self, $param) = @_;
+    my ( $self, $param ) = @_;
     my $cgi = $self->query;
 
     #   Determine and set the appropriate file system parsing routines for the 
@@ -66,7 +69,7 @@ sub _handle_file {
             $^O;
         }
     );
-    my @file = fileparse( $cgi->param($param), '\.[^\.]*' );
+    my @file = fileparse( $cgi->param( $param ), '\.[^\.]*' );
 
     #   Return an undefined value if the file name cannot be parsed from the 
     #   file field form parameter.
@@ -82,11 +85,11 @@ sub _handle_file {
 
     my $binmode = sub {
         my $OS;
-        unless ($OS = $^O) {
+        unless ( $OS = $^O ) {
             require Config;
             $OS = $Config::Config{'osname'};
         }
-        return (($OS =~ /(OS2)|(VMS)|(Win)/i) ? 1 : 0);
+        return ( ( $OS =~ /(OS2)|(VMS)|(Win)/i ) ? 1 : 0 );
     };
 
     #   Pass uploaded file into temporary file handle - This is somewhat 
@@ -95,9 +98,9 @@ sub _handle_file {
 
     my $buffer;
     my $fh = IO::File->new_tmpfile;
-    binmode($fh) if $binmode;
-    while (read($cgi->param($param), $buffer, 1024)) {
-        $fh->write($buffer, length($buffer));
+    binmode( $fh ) if $binmode;
+    while ( read( $cgi->param( $param ), $buffer, 1024 ) ) {
+        $fh->write( $buffer, length( $buffer ) );
     }
 
     #   Hold temporary file open, move file pointer to start - As the temporary 
@@ -105,19 +108,19 @@ sub _handle_file {
     #   accessible via this handle, the file handle must be held open for all 
     #   operations.
 
-    $fh->seek(0, 0);
+    $fh->seek( 0, 0 );
 
     #   Retrieve the MIME magic file, if this has been defined, and construct 
     #   the File::MMagic object for the identification of the MIME type of the 
     #   uploaded file.
 
     my $mime_magic = $self->mime_magic;
-    my $magic = length $mime_magic ? File::MMagic->new($mime_magic) : File::MMagic->new;
+    my $magic = length $mime_magic ? File::MMagic->new( $mime_magic ) : File::MMagic->new;
 
     my $properties = {
         'file_handle'   =>  $fh,
         'file_name'     =>  $file[0] . $file[2],
-        'file_type'     =>  lc substr($file[2], 1),
+        'file_type'     =>  lc substr( $file[2], 1 ),
         'mime_type'     =>  $magic->checktype_filehandle($fh)
     };
 
@@ -131,14 +134,14 @@ sub _handle_file {
     #   (File::MMagic->checktype_filehandle), which may or may not reset the 
     #   file pointer following its operation.
 
-    $fh->seek(0, 0);
+    $fh->seek( 0, 0 );
     
     return $properties;
 }
 
 
 sub mime_magic {
-    my ($self, $magic) = @_;
+    my ( $self, $magic ) = @_;
 
     #   If a filename is passed to this subroutine as an argument, this filename 
     #   is taken to be the file containing file MIME types and magic numbers 
@@ -150,7 +153,7 @@ sub mime_magic {
 
 
 sub new {
-    my ($class) = @_;
+    my ( $class ) = @_;
 
     my $self = bless {
         '_CACHE'    =>  {},
@@ -162,7 +165,7 @@ sub new {
 
 
 sub query {
-    my ($self) = @_;
+    my ( $self ) = @_;
     return $self->{'_CGI'};
 }
 
