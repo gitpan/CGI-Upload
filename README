@@ -1,0 +1,86 @@
+NAME
+    CGI::Upload - CGI class for handling browser file uploads
+
+SYNOPSIS
+      use CGI;
+      use CGI::Upload;
+
+      my $cgi = CGI->new;
+      my $upload = CGI::Upload->new( $cgi );
+
+      my $file_name = $upload->file_name( 'field_name' );
+      my $file_type = $upload->file_type( 'field_name' );
+
+      $upload->mime_magic( '/path/to/mime.types' );
+      my $mime_type = $upload->mime_type( 'field_name' );
+
+      my $file_handle = $upload->file_handle( 'field_name' );
+
+DESCRIPTION
+    This module has been written to provide a simple and secure
+    manner by which to handle files uploaded in multipart/form-data
+    requests through a web browser. The primary advantage which this
+    module offers over existing modules is the single interface
+    providing the most often required information regarding files
+    uploaded through multipart/form-data requests.
+
+    Building on the CGI manpage and the File::MMagic manpage, this
+    module offers a very tidy and succinct interface for handling of
+    file uploads.
+
+METHODS
+    The following methods are available through this module for use
+    in CGI scripts and can be exported upon request.
+
+    new( $cgi )
+        This method creates and returns a new CGI::Upload object,
+        the only mandatory argument to which is a CGI.pm object.
+        This is in part because only a single CGI.pm object can be
+        initiated within a given CGI script.
+
+    file_handle( 'field_name' )
+        This method returns the file handle to a temporary file
+        containing the file uploaded through the form input field
+        named 'field_name'.
+
+    file_name( 'field_name' )
+        This method returns the file name of the file uploaded
+        through the form input field named 'field_name' - This file
+        name does not reflect the local temporary file name of the
+        uploaded file, but that supplied by the client web browser.
+
+    file_type( 'field_name' )
+        This method returns the file type of the file uploaded as
+        indicated by the file extension - This does not necessarily
+        reflect the nature of the file uploaded, but allows CGI
+        scripts to perform cursory validation on the file uploaded.
+
+    mime_magic( '/path/to/mime.types' )
+        This method sets and/or returns the external magic mime
+        types file to be used for identification of files via the
+        mime_type method. By default, identification is based upon
+        internal mime types defined within the File::MMagic module.
+
+        See the File::MMagic manpage for further details.
+
+    mime_type( 'field_name' )
+        This method returns the file type of the file uploaded
+        through the form input field named 'field_name' as indicated
+        by the file magic numbers. This is the best means by which
+        to validate the nature of the uploaded file.
+
+        See the File::MMagic manpage for further details.
+
+SEE ALSO
+    the CGI manpage, the File::MMagic manpage, the HTTP::File
+    manpage
+
+COPYRIGHT
+    Copyright 2002, Rob Casey, rob@cowsnet.com.au
+
+    This library is free software; you can redistribute it and/or
+    modify it under the same terms as Perl itself.
+
+AUTHOR
+    Rob Casey, rob@cowsnet.com.au
+

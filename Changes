@@ -1,0 +1,10 @@
+Revision history for Perl extension CGI::Upload
+
+1.00  Mon Mar 11 00:00:00 2002
+        - original version; rob@cowsnet.com.au
+
+1.01  Wed Mar 13 13:35:00 2002
+        - included documentation; rob@cowsnet.com.au
+        - included binmode handling for temporary files; rob@cowsnet.com.au
+        - included call to File::Basename::fileparse_set_fstype; rob@cowsnet.com.au
+        - modified suffix regular expression in File::Basename::fileparse arguments; rob@cowsnet.com.au
