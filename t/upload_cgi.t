@@ -1,5 +1,6 @@
-#!/usr/bin/perl -w
+#!/usr/bin/perl
 use strict;
+use warnings;
 
 # subroutine to upload any file (and prepare the multi-part version of it on the fly).
 # For some reason you cannot run this function twice !?? What bug is this ?

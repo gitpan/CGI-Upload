@@ -1,5 +1,6 @@
-#!/usr/bin/perl -w
+#!/usr/bin/perl
 use strict;
+use warnings;
 
 # Try to imitate a windows client and a file name called "D:\0123.txt" as indicated in bug
 # report #1854  http://rt.cpan.org/NoAuth/Bug.html?id=1854

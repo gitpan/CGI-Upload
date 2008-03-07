@@ -1,5 +1,6 @@
 package CGI::Upload;
 use strict;
+use warnings;
 
 use Carp;
 use File::Basename;
@@ -7,7 +8,6 @@ use File::MMagic;
 use HTTP::BrowserDetect;
 use IO::File;
 
-use strict;
 use vars qw/ $AUTOLOAD $VERSION @ISA @EXPORT_OK /;
 
 require Exporter;
@@ -15,7 +15,7 @@ require Exporter;
 @ISA = qw/ Exporter /;
 @EXPORT_OK = qw/ file_handle file_name file_type mime_magic mime_type query /;
 
-$VERSION = '1.10';
+$VERSION = '1.11';
 
 
 sub AUTOLOAD {
@@ -76,7 +76,7 @@ sub _handle_file {
     #   Determine whether binary mode is required in the handling of uploaded 
     #   files - 
     #   Binary mode is deemed to be required when we (the server) are running one one 
-	#   of these platforms: for Windows, OS/2 and VMS 
+    #   of these platforms: for Windows, OS/2 and VMS 
 
     my $binmode = $^O =~ /OS2|VMS|Win|DOS|Cygwin/i;
 
@@ -89,10 +89,10 @@ sub _handle_file {
     binmode( $fh ) if $binmode;
 
 
-	# it seems that in CGI::Simple for every call to ->upload it somehow resets
-	# the file handle. or I don't really know what is the problem with this code:
+    # it seems that in CGI::Simple for every call to ->upload it somehow resets
+    # the file handle. or I don't really know what is the problem with this code:
     # while ( read( $cgi->upload( $param ) , $buffer, 1024 ) ) {
-	my $ourfh = $cgi->upload( $param );
+    my $ourfh = $cgi->upload( $param );
     while ( read( $ourfh , $buffer, 1024 ) ) {
         $fh->write( $buffer, length( $buffer ) );
     }
@@ -149,36 +149,36 @@ sub mime_magic {
 sub new {
     my ( $class, $args ) = @_;
 
-	if ($args and 'HASH' ne ref $args) {
-		croak( __PACKAGE__, 'Argument to new should be a HASH reference');
-	}
-	my $query;
-	my $module = "CGI";  # default module is CGI.pm if for nothing else for backword compatibility
-	
-	if ($args and $args->{query}) {
-		$module = $args->{query};
-	}
+    if ($args and 'HASH' ne ref $args) {
+        croak( __PACKAGE__, 'Argument to new should be a HASH reference');
+    }
+    my $query;
+    my $module = "CGI";  # default module is CGI.pm if for nothing else for backword compatibility
+    
+    if ($args and $args->{query}) {
+        $module = $args->{query};
+    }
 
-	if (ref $module) { # an object was passed to us
-		$query = $module;
-		$module = ref $module;
-	} else { # assuming a name of a module was passed to us
-	
-		# load the requested module
-		(my $file = $module) =~ s{::}{/}g;
-		$file .= ".pm";
-		require $file;
+    if (ref $module) { # an object was passed to us
+        $query = $module;
+        $module = ref $module;
+    } else { # assuming a name of a module was passed to us
+    
+        # load the requested module
+        (my $file = $module) =~ s{::}{/}g;
+        $file .= ".pm";
+        require $file;
 
 
-		if ("CGI::Simple" eq $module) {
-			$CGI::Simple::DISABLE_UPLOADS = 0;
-		} 
-		$query = new $module;
-	}
-			
-	if ($module eq "CGI::Simple" and $CGI::Simple::VERSION < '0.075') {
-		die "CGI::Simple must be at least version 0.075\n";
-	}
+        if ("CGI::Simple" eq $module) {
+            $CGI::Simple::DISABLE_UPLOADS = 0;
+        } 
+        $query = new $module;
+    }
+            
+    if ($module eq "CGI::Simple" and $CGI::Simple::VERSION < '0.075') {
+        die "CGI::Simple must be at least version 0.075\n";
+    }
 
     my $self = bless {
 #        '_CACHE'    =>  {},
@@ -321,6 +321,8 @@ Please report bugs on RT: L<http://rt.cpan.org/NoAuth/Bugs.html?Dist=CGI-Upload>
 =head1 TODO
 
 Explain why there is no 100% tests coverage...
+
+Give inteligent error message when user forgets to add  enctype="multipart/form-data" in the upload form.
 
 Add better MIME magic support (see request on RT)
 

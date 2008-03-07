@@ -40,7 +40,14 @@ METHODS
         feature in two ways, either providing the name of the module or an
         already existing object. In the former case, CGI::Upload will try to
         *require* the correct module and will *croak* if cannot load that
-        module. It has been tested with CGI.pm and CGI::Simple. Examples:
+        module. It has been tested with CGI.pm and CGI::Simple.
+
+        We tested it with CGI::Simple 0.075.
+
+        It is known to break with version 0.071 of CGI::Simple so we issue
+        our own die in such case.
+
+        Examples:
 
          use CGI::Upload;
          CGI::Upload->new({ query => "CGI::Simple"});
@@ -98,9 +105,8 @@ BUGS
 TODO
     Explain why there is no 100% tests coverage...
 
-    Add explicite license to module both in pod and in Makefile.PL
-
-    Add Module::Build support
+    Give inteligent error message when user forgets to add
+    enctype="multipart/form-data" in the upload form.
 
     Add better MIME magic support (see request on RT)
 
@@ -140,14 +146,20 @@ SEE ALSO
     CGI, File::MMagic, HTTP::File
 
 COPYRIGHT
-    Copyright 2002-2004, Rob Casey, rob@cowsnet.com.au
+    Copyright 2002-2004, Rob Casey, rob.casey@bluebottle.com
 
 AUTHOR
-    Original author: Rob Casey, rob@cowsnet.com.au
+    Original author: Rob Casey, rob.casey@bluebottle.com
 
     Current mainainer: Gabor Szabo, gabor@pti.co.il
 
     Thanks to
 
-    Mark Stosberg for suggestions
+    Mark Stosberg for suggestions.
+
+    and to the CPAN Testers for testing.
+
+LICENSE
+    This library is free software; you can redistribute it and/or modify it
+    under the same terms as Perl itself.
 

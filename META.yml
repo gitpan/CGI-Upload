@@ -1,9 +1,12 @@
---- #YAML:1.0
+---
 name: CGI-Upload
-version: 1.10
-author: Rob Casey <rob.casey@bluebottle.com>
+version: 1.11
+author:
+  - 'Rob Casey <rob.casey@bluebottle.com>'
 abstract: CGI class for handling browser file uploads
 license: perl
+resources:
+  license: http://dev.perl.org/licenses/
 requires:
   CGI: 2.47
   Carp: 0
@@ -13,5 +16,8 @@ requires:
 provides:
   CGI::Upload:
     file: lib/CGI/Upload.pm
-    version: 1.10
-generated_by: Module::Build version 0.25
+    version: 1.11
+generated_by: Module::Build version 0.2808
+meta-spec:
+  url: http://module-build.sourceforge.net/META-spec-v1.2.html
+  version: 1.2

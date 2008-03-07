@@ -2,16 +2,17 @@
 use ExtUtils::MakeMaker;
 WriteMakefile
 (
-          'PL_FILES' => {},
-          'INSTALLDIRS' => 'site',
           'NAME' => 'CGI::Upload',
           'VERSION_FROM' => 'lib/CGI/Upload.pm',
           'PREREQ_PM' => {
-                           'Test::More' => 0,
-                           'HTTP::BrowserDetect' => '0.97',
-                           'File::MMagic' => '1.16',
                            'CGI' => '2.47',
-                           'Carp' => 0
-                         }
+                           'Carp' => '0',
+                           'File::MMagic' => '1.16',
+                           'HTTP::BrowserDetect' => '0.97',
+                           'Test::More' => '0'
+                         },
+          'INSTALLDIRS' => 'site',
+          'EXE_FILES' => [],
+          'PL_FILES' => {}
         )
 ;
